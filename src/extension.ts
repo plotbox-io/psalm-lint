@@ -8,6 +8,7 @@ const decorationType = vscode.window.createTextEditorDecorationType({
 
 let psalmStatusBar: vscode.StatusBarItem;
 let debugChannel = vscode.window.createOutputChannel("Psalm Docker Debug");
+let psalmDiagnostics: vscode.DiagnosticCollection|null;
 
 export function activate(context: vscode.ExtensionContext) {
   psalmStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
@@ -47,6 +48,10 @@ function decorate(editor: vscode.TextEditor) {
   const composerContents = JSON.parse(fs.readFileSync(composerPath));
   if(composerContents.config.name !== "plotbox-io/plotbox-app") {
     return;
+  }
+
+  if(!psalmDiagnostics) {
+    psalmDiagnostics = vscode.languages.createDiagnosticCollection('psalm');
   }
 
   psalmStatusBar.text = 'Psalm: linting...';
@@ -100,9 +105,9 @@ php -d xdebug.start_with_request=no \
         // });
       });
 
-      const psalmDiagnostics: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection('psalm');
       const uri: vscode.Uri = vscode.Uri.file(editor.document.uri.path);
-      psalmDiagnostics.set(uri, diagnostics);
+      psalmDiagnostics?.clear();
+      psalmDiagnostics?.set(uri, diagnostics);
       // editor.setDecorations(decorationType, decorationsArray);
 
       psalmStatusBar.text = 'Psalm: ready';
