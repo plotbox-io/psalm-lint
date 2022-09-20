@@ -8,7 +8,7 @@ const decorationType = vscode.window.createTextEditorDecorationType({
 
 let psalmStatusBar: vscode.StatusBarItem;
 let debugChannel = vscode.window.createOutputChannel("Psalm Docker Debug");
-let psalmDiagnostics: vscode.DiagnosticCollection|null;
+let psalmDiagnostics: vscode.DiagnosticCollection | null;
 
 export function activate(context: vscode.ExtensionContext) {
   psalmStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
@@ -21,15 +21,24 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   vscode.workspace.onWillSaveTextDocument(event => {
-    const openEditor = vscode.window.visibleTextEditors.filter(
-      editor => editor.document.uri === event.document.uri
-    )[0];
-    decorate(openEditor);
+    decorate(event.document.uri);
   });
+
+  vscode.workspace.onDidOpenTextDocument(event => {
+    if (event.uri.path.endsWith('.php')) {
+      decorate(event.uri);
+    }
+  });
+
+  vscode.workspace.textDocuments.forEach((document: vscode.TextDocument) => {
+    if (document.uri.path.endsWith('.php')) {
+      decorate(document.uri);
+    }
+  })
 }
 
-function decorate(editor: vscode.TextEditor) {
-  let relativePath = editor.document.uri.path;
+function decorate(filePath: vscode.Uri) {
+  let relativePath = filePath.path;
   let projectRoot: string = '';
   vscode.workspace.workspaceFolders?.forEach(folder => {
     if (relativePath.startsWith(folder.uri.path)) {
@@ -46,17 +55,17 @@ function decorate(editor: vscode.TextEditor) {
   }
 
   const composerContents = JSON.parse(fs.readFileSync(composerPath));
-  if(composerContents.config.name !== "plotbox-io/plotbox-app") {
+  if (composerContents.config.name !== "plotbox-io/plotbox-app") {
     return;
   }
 
-  if(!psalmDiagnostics) {
+  if (!psalmDiagnostics) {
     psalmDiagnostics = vscode.languages.createDiagnosticCollection('psalm');
   }
 
   psalmStatusBar.text = 'Psalm: linting...';
-	psalmStatusBar.tooltip = 'Psalm Linter';
-	psalmStatusBar.show();
+  psalmStatusBar.tooltip = 'Psalm Linter';
+  psalmStatusBar.show();
 
   const command = "docker-compose exec -T php \
 /bin/bash -c \" \
@@ -105,8 +114,7 @@ php -d xdebug.start_with_request=no \
         // });
       });
 
-      const uri: vscode.Uri = vscode.Uri.file(editor.document.uri.path);
-      psalmDiagnostics?.clear();
+      const uri: vscode.Uri = vscode.Uri.file(filePath.path);
       psalmDiagnostics?.set(uri, diagnostics);
       // editor.setDecorations(decorationType, decorationsArray);
 
