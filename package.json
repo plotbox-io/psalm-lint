@@ -2,7 +2,7 @@
   "name": "psalm-lint",
   "displayName": "psalm-lint",
   "description": "VSCode static analysis linter for PHP using Psalm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.69.2"
   },

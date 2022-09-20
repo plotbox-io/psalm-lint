@@ -49,6 +49,10 @@ function decorate(editor: vscode.TextEditor) {
     return;
   }
 
+  psalmStatusBar.text = 'Psalm: linting...';
+	psalmStatusBar.tooltip = 'Psalm Linter';
+	psalmStatusBar.show();
+
   const command = "docker-compose exec php \
 /bin/bash -c \" \
 php -d xdebug.start_with_request=no \
@@ -100,6 +104,8 @@ php -d xdebug.start_with_request=no \
       const uri: vscode.Uri = vscode.Uri.file(editor.document.uri.path);
       psalmDiagnostics.set(uri, diagnostics);
       // editor.setDecorations(decorationType, decorationsArray);
+
+      psalmStatusBar.text = 'Psalm: ready';
     });
 
   const fatalError = function (errorMessage: string) {
