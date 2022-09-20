@@ -58,7 +58,7 @@ function decorate(editor: vscode.TextEditor) {
 	psalmStatusBar.tooltip = 'Psalm Linter';
 	psalmStatusBar.show();
 
-  const command = "docker-compose exec php \
+  const command = "docker-compose exec -T php \
 /bin/bash -c \" \
 php -d xdebug.start_with_request=no \
   vendor/bin/psalm \
