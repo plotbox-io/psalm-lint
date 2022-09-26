@@ -2,9 +2,9 @@
   "name": "psalm-lint",
   "displayName": "psalm-lint",
   "description": "VSCode static analysis linter for PHP using Psalm",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "engines": {
-    "vscode": "^1.69.2"
+    "vscode": "^1.62.3"
   },
   "categories": [
     "Other"
@@ -31,7 +31,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.69.2",
+    "@types/vscode": "^1.62",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
